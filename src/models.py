@@ -24,7 +24,9 @@ def parse_date(v: Any) -> Optional[date]:
         if dt is None:
             logger.warning(f"Could not parse date string: {v}")
 
+        logger.debug(f'parsed date string: {v}')
         return dt.date() if dt else None
+
     return None
 
 class ExpenseCategory(str, Enum):
@@ -39,7 +41,18 @@ class ExpenseCategory(str, Enum):
     BOOKS = "Books"
     TOYS = "Toys"
 
+class CurrencyCategory(str, Enum):
+    """
+    Enum for predefined currencies. This can be expanded based on common currencies relevant to the use case.
+    The reason to go for an Enum is to induce more structure and consistency in the currency field, which can otherwise
+    become quite free-form otherwise.
 
+    For now, we just use a few common currencies, but this can be easily expanded.
+    """
+    USD = "USD"
+    EUR = "EUR"
+    GBP = "GBP"
+    JPY = "JPY"
 
 # LineItem datastructure to represent individual line items on an invoice.
 class LineItem(BaseModel):
@@ -61,6 +74,10 @@ class InvoiceData(BaseModel):
     buyers_name: Optional[str] = Field(default=None, description="Buyer's name on the invoice")
     total_amount: Optional[float] = Field(default=None, description="Total amount on the invoice")
     line_items: list[LineItem] = Field(default_factory=list, description="Extract all line items from the invoice table, each with a name and price")
+    currency: Optional[CurrencyCategory] = Field(default=None, description="Currency of the amounts listed on the invoice. "
+                                                              "Extract this if explicitly mentioned, otherwise return None. "
+                                                              "Do not infer or assume currency based on vendor location or other context.")
+
 
     # The category/categories of the invoice, which can be inferred from the vendor identity and line item descriptions.
     # This is an Enum to induce structure and consistency throughout categories. A set was chosen to allow for an invoice

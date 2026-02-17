@@ -1,6 +1,5 @@
 import io
 import logging
-import os
 from typing import Optional
 from src.models import InvoiceData
 from PIL import Image
@@ -54,12 +53,13 @@ class ExtractionAgent:
             "3. Date Interpretation: Use document context (vendor information, language) to correctly interpret the "
             "date format in the document: Date-Month-Year vs Month-Date-Year.\n"
             "4. Zero Hallucination: return None for fields not present in the document.\n"
-            "5. Semantic Classification: Infer the expense category by analyzing the vendor identity and line item descriptions.\n\n"
+            "5. Semantic Classification: Infer the expense category by analyzing the vendor identity and line item descriptions.\n"
+            "6. Currency Extraction: Extract the currency if explicitly mentioned. Do not infer or assume currency "
+            "based on vendor location or other context. Currency symbols are typically found next to the total amount.\n\n"
             
             "Constraint:\n"
             "- Return ONLY structured data matching the provided schema.\n"
             "- Do not include any explanatory text, reasoning steps, or formatting outside of the structured data.\n"
-            "- Do not return currency symbols." # todo maybe want to change that since currency information is useful
         )
 
     async def extract_data(self, image: Image.Image) -> AgentRunResult:
@@ -70,7 +70,6 @@ class ExtractionAgent:
         :param image: Image of the invoice to be processed
         :return: Structured data extracted from the invoice, adhering strictly to the InvoiceData schema.
         """
-
         # initialize the buffer
         buffer = io.BytesIO()
 
@@ -84,9 +83,11 @@ class ExtractionAgent:
         )
 
         return await self.agent.run(
-            user_prompt=[prompt, BinaryImage(data=image_bytes, media_type='image/jpeg')],
-            output_type=InvoiceData
+            [prompt, BinaryImage(data=image_bytes, media_type='image/jpeg')],
+            output_type=InvoiceData,
+            model_settings={'openai_reasoning_effort': 'low'},  # set reasoning effort to low dict gets ignored by non-OpenAI models
         )
+
 
 
 
