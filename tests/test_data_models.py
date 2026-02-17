@@ -52,7 +52,8 @@ class TestDataModels:
                 LineItem(description="Cake", quantity=1, unit_price_net=15.00, line_total_net=15.00, line_total_gross=16.50, vat_rate=10),
                 LineItem(description="Pastry", quantity=3, unit_price_net=10.00, line_total_net=30.00, line_total_gross=33.00, vat_rate=10)
             ],
-            invoice_date="2024-01-15"
+            invoice_date="2024-01-15",
+            category="Food"
         )
 
         # do the asserts
@@ -62,6 +63,8 @@ class TestDataModels:
         assert len(invoice.line_items) == 3
         assert invoice.line_items[0].description == "Bread"
         assert invoice.line_items[0].quantity == 2
+        assert invoice.category == "Food"
+        assert invoice.invoice_date == date(2024, 1, 15)
 
     def test_invoice_data_defaults(self):
         invoice = InvoiceData()
@@ -70,3 +73,4 @@ class TestDataModels:
         assert invoice.total_amount is None
         assert invoice.line_items == []
         assert invoice.invoice_date is None
+        assert invoice.category is None
