@@ -37,6 +37,13 @@ class ExtractionAgent:
         # See: https://ai.pydantic.dev/agent/#instructions
         self.agent.instructions(self._core_persona)
 
+    @property
+    def model_display_name(self) -> str:
+        """
+        Created a bit safer way to retrieve the model name without reaching deep into attributes when needed
+        """
+        return self.agent.model.model_name
+
     def _core_persona(self) -> str:
         return (
             "Role: Senior Financial Audit Specialist & Data Extraction Expert.\n\n"

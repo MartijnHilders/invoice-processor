@@ -71,12 +71,18 @@ async def gather_with_concurrency(n: int, *coros: tuple[types.CoroutineType, ...
     return await asyncio.gather(*(sem_coro(c) for c in coros))
 
 
-def create_hash(invoice: InvoiceData):
+def create_hash(invoice: InvoiceData) -> str:
     """
-    Create a hash value based on the vendor name, invoice number
-    :param invoice:
+    Create a hash based on the vendor name, invoice date, invoice number and total gross amount. This is used to identify duplicates
+    choice was made for the prototype to use a readable hash. In a production scenario, we would want to use a more robust
+    hashing algorithm to avoid potential collisions.
+    :param invoice: The invoice data for which to create the hash.
     :return:
     """
 
-    pass
+    vendor = (invoice.vendor_name or "").strip().lower()
+    date = str(invoice.invoice_date or "")
+    invoice_number = str(invoice.invoice_number or "")
+    invoice_total_amount_gross = f"{invoice.total_amount_gross:.2f}" if invoice.total_amount_gross else "" # make sure we get consistent number formatting
+    return f"{vendor}_{date}_{invoice_number}_{invoice_total_amount_gross}"
 

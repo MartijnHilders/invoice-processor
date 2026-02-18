@@ -1,6 +1,7 @@
 import dateparser
 import logging
-from datetime import date
+import pytz
+from datetime import date, datetime
 from enum import Enum
 from pydantic import BaseModel, Field, BeforeValidator
 from typing import Optional, Annotated, Literal, Union
@@ -55,7 +56,6 @@ class CurrencyCategory(str, Enum):
     JPY = "JPY"
 
 class PaymentInfo(BaseModel):
-
     # just listed some examples of payment information doing it in a dataclass made it easier to recognize which type
     # of payment provider should be used, IBAN would have been enough as these are on the sample invoices but wanted to
     # show the extension possibilities.
@@ -109,7 +109,6 @@ class InvoiceData(BaseModel):
                                                               "Do not infer or assume currency based on vendor location or other context.")
 
 
-
     # The category/categories of the invoice, which can be inferred from the vendor identity and line item descriptions.
     # This is an Enum to induce structure and consistency throughout categories. A set was chosen to allow for an invoice
     # to have multiple (unique) categories, which is often the case in real-world invoices that contain multiple items.
@@ -121,12 +120,15 @@ class InvoiceData(BaseModel):
     )
 
 
+class InvoiceResultMetadata(BaseModel):
+    model_used: str = Field(..., description="The name of the model used for extraction.")
+    filename: str = Field(..., description="The original name of the uploaded file.")
+    hash_value: str = Field(..., description="A hash value generated from the invoice data to identify duplicates.")
+    created_time: datetime = Field(default_factory= lambda: datetime.now(pytz.UTC), description="The moment when the invoice was processed, in UTC for standardisation.")
 
 class InvoiceResult(BaseModel):
     status: Literal["ACCEPT", "REJECT"] = Field(..., description="The status of the invoice after applying the logic rules.")
     reasons: Optional[list[str]] = Field(default_factory=list, description="The reasons for rejection if the invoice is rejected. If the invoice is accepted, this can be None.")
     extracted_data: InvoiceData = Field(..., description="The extracted data from the invoice that was used for applying the logic rules.")
-
-    # todo add metadata, hash, time of processing, model?
-    # metadata:
+    metadata: InvoiceResultMetadata = Field(..., description="Metadata about the extraction result, such as the model used, time of processing, file-name.")
 

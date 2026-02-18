@@ -8,7 +8,7 @@ from src.extraction_agent import ExtractionAgent
 from src.utils import load_document, gather_with_concurrency
 
 dotenv.load_dotenv()
-logger = logging.getLogger('ProcessInvoices - Script')
+logger = logging.getLogger('ExtractInvoices - Script')
 
 if os.getenv('LOGFIRE_TOKEN'):
     import logfire
