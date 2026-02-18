@@ -49,7 +49,7 @@ class ExtractionAgent:
             "1. Literal Extraction: Retrieve all values exactly as they appear. Do not apply rounding, normalization, "
             "or mathematical corrections. If the document contains an error, the error must be preserved in the extraction.\n"
             "2. Spatial Logic: Use the visual layout to map concepts. Associate line items with their respective prices "
-            "& identify seller/vendor identity based on header alignment and proximity. \n"
+            "& identify seller/vendor information based on header alignment and proximity. \n"
             "3. Date Interpretation: Use document context (vendor information, language) to correctly interpret the "
             "date format in the document: Date-Month-Year vs Month-Date-Year.\n"
             "4. Zero Hallucination: return None for fields not present in the document.\n"

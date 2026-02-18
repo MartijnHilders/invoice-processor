@@ -3,6 +3,8 @@ import io
 import types
 import pymupdf
 from PIL import Image
+from src.models import InvoiceData
+
 
 def load_document(file_bytes: bytes, extension: str, max_dimension: int = 1750) -> Image.Image:
     """
@@ -69,4 +71,12 @@ async def gather_with_concurrency(n: int, *coros: tuple[types.CoroutineType, ...
     return await asyncio.gather(*(sem_coro(c) for c in coros))
 
 
+def create_hash(invoice: InvoiceData):
+    """
+    Create a hash value based on the vendor name, invoice number
+    :param invoice:
+    :return:
+    """
+
+    pass
 
