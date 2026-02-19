@@ -40,7 +40,7 @@ def get_agent():
 
     agent = ExtractionAgent(
         model_name=os.getenv('MODEL_NAME'),
-        api_key=os.getenv('OPENAI_API_KEY') or os.getenv("MODEL_API_KEY"),
+        api_key=os.getenv("MODEL_API_KEY"),
         base_url=os.getenv("MODEL_BASE_URL")
     )
 
@@ -74,7 +74,7 @@ config = get_config()
 st.title("Invoice Processor")
 uploaded_files = st.file_uploader(
     "Upload Invoices",
-    type=["pdf", "jpg", "png", "tiff", "tif"], # restrict to data types we have seen in the sample invoices
+    type=["pdf", "jpg", "jpeg", "png", "tiff", "tif"], # restrict to data types we have seen in the sample invoices
     accept_multiple_files=True,
     max_upload_size=20 # 20 mb per file as we only process one pagers
 )
@@ -85,7 +85,6 @@ if st.sidebar.button("Clear Session History"):
     st.session_state.history = []
     st.session_state.current_batch = []
 
-    st.sidebar.success("History cleared!")
     logger.info('Processing history cleared by user.')
     st.rerun()
 

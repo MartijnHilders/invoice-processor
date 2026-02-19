@@ -11,7 +11,7 @@ logger = logging.getLogger('ExtractionAgent')
 
 class ExtractionAgent:
 
-    def _get_model(self, model_name: str, api_key: str, base_url: Optional[str]=None) -> OpenAIChatModel:
+    def _get_model(self, model_name: str, api_key: str, base_url: Optional[str] = None) -> OpenAIChatModel:
         """
         Initialize the OpenAI chat model with the provided parameters.
 
@@ -31,6 +31,7 @@ class ExtractionAgent:
 
     def __init__(self, model_name: str, api_key: str, base_url: Optional[str] = None):
         model = self._get_model(model_name=model_name, api_key=api_key, base_url=base_url)
+
 
         # set up the agent
         self.agent = Agent(
@@ -100,11 +101,21 @@ class ExtractionAgent:
             "Extract the structured data from the provided invoice."
         )
 
-        return await self.agent.run(
-            [prompt, BinaryImage(data=image_bytes, media_type='image/jpeg')],
-            output_type=InvoiceData,
-            model_settings={'openai_reasoning_effort': 'low'},  # set reasoning effort to low dict gets ignored by non-OpenAI models
-        )
+        try:
+            return await self.agent.run(
+                [prompt, BinaryImage(data=image_bytes, media_type='image/jpeg')],
+                output_type=InvoiceData,
+                model_settings={'openai_reasoning_effort': 'low'},  # set reasoning effort to low dict gets ignored by non-OpenAI models
+            )
+
+        # broad exception catch since sometimes the model_settings do not translate well to other models/endpoints
+        except Exception as e:
+            logger.warning(f"Error during extraction with model settings, retrying without model settings. Error: {e}")
+            return await self.agent.run(
+                [prompt, BinaryImage(data=image_bytes, media_type='image/jpeg')],
+                output_type=InvoiceData,
+            )
+
 
 
 

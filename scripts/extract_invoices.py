@@ -74,7 +74,7 @@ async def main(agent: ExtractionAgent, data_dir: Path, concurrent_tasks: int = 5
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    agent = ExtractionAgent(model_name=os.getenv('MODEL_NAME'), api_key=os.getenv('OPENAI_API_KEY'))
+    agent = ExtractionAgent(model_name=os.getenv('MODEL_NAME'), api_key=os.getenv('MODEL_API_KEY'), base_url=os.getenv("MODEL_BASE_URL"))
     data_dir = Path('data') # change to the directory where sample invoices are stored
 
     asyncio.run(main(agent=agent, data_dir=data_dir))
