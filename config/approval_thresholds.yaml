@@ -1,0 +1,13 @@
+# Business Rule Thresholds
+thresholds:
+  max_total_gross: 500
+  min_invoice_year: 2017
+  rounding_tolerance: 1.00
+  max_line_item_gross: 200
+
+  # make sure these match the InvoiceData class fields exactly
+  required_fields:
+    - vendor_name
+    - buyers_name
+    - invoice_date
+    - total_amount_gross
