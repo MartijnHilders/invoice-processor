@@ -1,11 +1,13 @@
-from src.models import InvoiceData, InvoiceResult
+from src.models import InvoiceData
 
 def logic_rules(invoice: InvoiceData, config: dict) -> list[str]:
     """
+    Evaluate an invoice against the configured business rules and return a list of rejection reasons.
+    Returns an empty list if the invoice passes all rules (i.e. should be accepted).
 
-    :param invoice: The invoice data extracted from the document
-    :param config: The configuration dictionary containing the thresholds for the validation
-    :return: A list of reasons for rejection if the invoice is rejected, or an empty list if the invoice is accepted.
+    :param invoice: The extracted invoice data to validate.
+    :param config: Configuration dictionary containing rule thresholds (e.g. max total, min year, required fields).
+    :return: List of rejection reasons. Empty list indicates the invoice passes all rules.
     """
     reasons = []
 
@@ -21,7 +23,8 @@ def logic_rules(invoice: InvoiceData, config: dict) -> list[str]:
         reasons.append(f'Missing required fields: {", ".join(missing_fields)}')
 
     # check if the total amount gross exceeds the threshold, also report if the total amount gross is missing and that
-    # has not been reported yet as a required field. RULE 1
+    # has not been reported yet as a required field (e.g. the required fields changed in the config and don't
+    # list gross total anymore). RULE 1
     if invoice.total_amount_gross is not None:
         if invoice.total_amount_gross > config['thresholds']['max_total_gross']:
             reasons.append(

@@ -80,7 +80,8 @@ class LineItem(BaseModel):
 # InvoiceData datastructure to hold all relevant information extracted from an invoice, including vendor, buyer, total amount, line items, and invoice date.
 class InvoiceData(BaseModel):
     # general invoice details
-    invoice_number: Optional[str] = Field(default=None, description="The unique identifier (invoice number) listed on the invoice.")
+    invoice_number: Optional[str] = Field(default=None, description="The unique invoice identifier. Typically labeled as such on the document "
+    "If no such label exists, return None rather than guessing from other numbers on the document.")
 
     # use parser for the invoice date to make it robust to non date return types
     invoice_date: Annotated[Optional[date], BeforeValidator(parse_date), Field(default=None,

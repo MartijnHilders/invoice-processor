@@ -5,17 +5,26 @@ import asyncio
 import json
 from pathlib import Path
 from src.extraction_agent import ExtractionAgent
+from src.models import InvoiceData
 from src.utils import load_document, gather_with_concurrency
 
 dotenv.load_dotenv()
 logger = logging.getLogger('ExtractInvoices - Script')
 
+# initialise logfire if the token is provided
 if os.getenv('LOGFIRE_TOKEN'):
     import logfire
     logfire.configure()
     logfire.instrument_pydantic_ai()
 
-async def process_invoice(file_path: Path, agent: ExtractionAgent):
+async def process_invoice(file_path: Path, agent: ExtractionAgent) -> InvoiceData:
+    """
+    Process a single invoice document, extracting data using the provided agent.
+
+    :param file_path: file path to the invoice document
+    :param agent: agent instance to use for data extraction
+    :return: extracted invoice data or None if an error occurs
+    """
     try:
         file_extension = os.path.splitext(file_path)[-1].lower()
 
@@ -33,6 +42,15 @@ async def process_invoice(file_path: Path, agent: ExtractionAgent):
 
 
 async def main(agent: ExtractionAgent, data_dir: Path, concurrent_tasks: int = 5):
+    """
+    Main function to process all invoice documents in the specified directory using the provided agent in parallel with
+    limited concurrency. saves the extracted data in a JSON file "extracted_invoices.json".
+
+    :param agent: agent instance to use for data extraction
+    :param data_dir: directory containing invoice documents to be processed
+    :param concurrent_tasks: number of concurrent tasks to run when processing invoices, default is 5 to balance speed and model load
+    :return:
+    """
     # Create tasks for all files
     tasks = []
     file_paths = []
@@ -57,7 +75,7 @@ async def main(agent: ExtractionAgent, data_dir: Path, concurrent_tasks: int = 5
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     agent = ExtractionAgent(model_name=os.getenv('MODEL_NAME'), api_key=os.getenv('OPENAI_API_KEY'))
-    data_dir = Path('data')
+    data_dir = Path('data') # change to the directory where sample invoices are stored
 
     asyncio.run(main(agent=agent, data_dir=data_dir))
 

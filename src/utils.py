@@ -51,7 +51,7 @@ def load_document(file_bytes: bytes, extension: str, max_dimension: int = 1750) 
 
     return image
 
-async def gather_with_concurrency(n: int, *coros: tuple[types.CoroutineType, ...]):
+async def gather_with_concurrency(n: int, *coros: tuple[types.CoroutineType, ...]) -> list:
     """
     The function wraps around asyncio.gather() that limits the number of coroutines
     that can be running at any given time to n. Useful for limiting the number of concurrent connections to an
@@ -76,13 +76,15 @@ def create_hash(invoice: InvoiceData) -> str:
     Create a hash based on the vendor name, invoice date, invoice number and total gross amount. This is used to identify duplicates
     choice was made for the prototype to use a readable hash. In a production scenario, we would want to use a more robust
     hashing algorithm to avoid potential collisions.
+
     :param invoice: The invoice data for which to create the hash.
-    :return:
+    :return: A string hash that can be used to identify duplicates based on the invoice data.
     """
 
     vendor = (invoice.vendor_name or "").strip().lower()
     date = str(invoice.invoice_date or "")
     invoice_number = str(invoice.invoice_number or "")
     invoice_total_amount_gross = f"{invoice.total_amount_gross:.2f}" if invoice.total_amount_gross else "" # make sure we get consistent number formatting
+
     return f"{vendor}_{date}_{invoice_number}_{invoice_total_amount_gross}"
 

@@ -12,6 +12,15 @@ logger = logging.getLogger('ExtractionAgent')
 class ExtractionAgent:
 
     def _get_model(self, model_name: str, api_key: str, base_url: Optional[str]=None) -> OpenAIChatModel:
+        """
+        Initialize the OpenAI chat model with the provided parameters.
+
+        :param model_name: model identifier (e.g. 'gpt-5-mini-2025-08-07')
+        :param api_key: API key for authentication
+        :param base_url: custom base URL for non-standard endpoints (e.g. Azure OpenAI). Defaults to standard OpenAI if None.
+        :return: configured OpenAIChatModel instance
+        """
+
         # initialize the provider
         provider = OpenAIProvider(base_url=base_url, # None for standard OpenAI since this is defaulted
                                   api_key=api_key)
@@ -28,8 +37,8 @@ class ExtractionAgent:
             model=model,
             instrument=True, # enables use of logfire when wanted
             name="ExtractionAgent",
-            retries=2,
-            output_retries=2
+            retries=2, # allow retry on failure
+            output_retries=2 # allow retry on output parsing failure, for strict schema adherence
         )
 
         # we use instructions > system prompt to follow Pydantic AI best practices. Ensuring cleaner prompt scoping that
@@ -69,14 +78,16 @@ class ExtractionAgent:
             "- Do not include any explanatory text, reasoning steps, or formatting outside of the structured data.\n"
         )
 
-    async def extract_data(self, image: Image.Image) -> AgentRunResult:
+    async def extract_data(self, image: Image.Image) -> AgentRunResult[InvoiceData]:
         """
         Extracts structured data from an invoice image. It first converts the image to bytes and then sends it to the
-        agent extract the relevant information according to the InvoiceData schema.
+        agent to extract the relevant information according to the InvoiceData schema.
 
         :param image: Image of the invoice to be processed
         :return: Structured data extracted from the invoice, adhering strictly to the InvoiceData schema.
         """
+        logger.info(f"Extracting data from invoice using model: {self.model_display_name}")
+
         # initialize the buffer
         buffer = io.BytesIO()
 
