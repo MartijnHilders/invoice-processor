@@ -104,7 +104,7 @@ To ensure the output data is in a consistent format the `InvoiceResult` is intro
 ### Setup
 
 ```bash
-git clone https://github.com/your-username/invoice-processor
+git clone https://github.com/MartijnHilders/invoice-processor
 cd invoice-processor
 cp .env.example .env
 # Edit .env and fill in your API key, model name and/or Model base URL (and Logfire token if wanting the logfire observability)
@@ -156,13 +156,9 @@ Script which pulls invoices from /data folder and saves to .json at root folder 
 uv run python scripts/extract_invoices.py
 ```
 
----
-
 ## Configuration
 
 Approval thresholds are stored in `config/approval_thresholds.yaml`. Update this file to change business rules without modifying code. When using docker rebuild is obviously required after changes. 
-
----
 
 
 

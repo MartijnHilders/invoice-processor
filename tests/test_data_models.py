@@ -1,4 +1,5 @@
-from src.models import InvoiceData, LineItem, InvoiceResult, ExpenseCategory, PaymentInfo, CurrencyCategory
+from src.models import InvoiceData, LineItem, InvoiceResult, ExpenseCategory, PaymentInfo, CurrencyCategory, \
+    InvoiceResultMetadata
 from datetime import date
 from pydantic import ValidationError
 
@@ -106,6 +107,11 @@ class TestDataModels:
             status="ACCEPT",
             reasons=[],
             extracted_data=InvoiceData(),
+            metadata=InvoiceResultMetadata(
+                hash_value="___",
+                filename="test.pdf",
+                model_used="nothing"
+            )
         )
         assert result.status == "ACCEPT"
 
@@ -113,5 +119,10 @@ class TestDataModels:
             status="REJECT",
             reasons=[],
             extracted_data=InvoiceData(),
+            metadata=InvoiceResultMetadata(
+                hash_value="___",
+                filename="test.pdf",
+                model_used="nothing"
+            )
         )
         assert result.status == "REJECT"
