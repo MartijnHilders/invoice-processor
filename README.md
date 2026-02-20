@@ -21,7 +21,7 @@ Finance teams receive invoices frequently and in various formats, (PDF, scanned 
 
 While standard OCR techniques can be used for text extraction from invoices, they do not retain spatial layout. Something which is essential for invoices that rely on structure. The position of data determines its meaning (usually via headers) and understanding this context significantly improves extraction precision. 
 
-Vision-Language models are able to process visual layout and text simultaneously, solving this problem while also reducing the need for complex post processing logic to handle edge cases introduced by varying invoice templates. This keeps the overall solution lightweight, making Vision-Language models the natural choice for this task.
+Vision-Language models are able to process visual layout and text simultaneously, solving this problem while also reducing the need for complex post processing logic to handle edge cases introduced by varying invoice templates. This keeps the overall solution lightweight, making Vision-Language models the natural choice for this task. Specifically one which has toolcalling capabilities to allow for the use of a dedicated data parsing library as described in the section: Structured Data Extraction.
 
 ### MultiModal Input Strategy
 
@@ -97,8 +97,9 @@ To ensure the output data is in a consistent format the `InvoiceResult` is intro
 - Either: 
     - OpenAI key for the default end-point (`https://api.openai.com/v1`)
     - API-key for a custom endpoint: 
-        - Gemini: (https://generativelanguage.googleapis.com/v1beta/openai)
         - Ollama: (http://localhost:11434/v1)
+        mistral-small3.2:latest is recommended here
+        - Gemini: (https://generativelanguage.googleapis.com/v1beta/openai)
         - etc.
 
 ### Setup
@@ -109,6 +110,7 @@ cd invoice-processor
 cp .env.example .env
 # Edit .env and fill in your API key, model name and/or Model base URL (and Logfire token if wanting the logfire observability)
 ```
+
 
 #### Environment Variables
 
