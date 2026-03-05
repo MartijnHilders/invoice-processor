@@ -1,6 +1,6 @@
 # Invoice Processor
 
-A lightweight AI-powered invoice processing system that extracts structured data from invoices, provides details about its category and automatically approves or reject them based on business rules.  *Made for a take-home assignment.* 
+A lightweight AI-powered invoice processing system that extracts structured data from invoices, provides details about its category and automatically approves or reject them based on business rules. 
 
 ## Overview
 
